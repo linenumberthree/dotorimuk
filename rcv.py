@@ -24,9 +24,9 @@ GPIO.setup(17, GPIO.OUT)
 ser=serial.Serial('/dev/ttyACM0', 9600)
 
 camera = PiCamera()
-camera.resolution=(640, 480)
+camera.resolution=(640, 480)		# 해상도 설정
 
-
+# 이메일 등록 #
 me='dotorimuk4@naver.com'
 you='dotorimuk4@naver.com'
 user='dotorimuk4'
@@ -35,14 +35,14 @@ smtp_server='smtp.naver.com'
 smtp_port=465
 
 
-def time_thread_run():
+def time_thread_run():			# 일정 시간마다 아두이노에 Interrupt 발생
     while True:
         GPIO.output(17, False)
         print("On")
         time.sleep(1)
         GPIO.output(17, True)
         print("Off")
-        time.sleep(30)
+        time.sleep(30)		# 센서 값 측정 주기 설정(단위 : 분)
 
 
 def rp_camera():
@@ -54,14 +54,14 @@ def rp_camera():
             print("Soil humidity : {}".format(watermsg))
         elif 'Warning' in msg:
             if 'S' in msg:
-                print("54321")
+            	# 토양 습도 값이 과하게 건조할 경우
                 errormsg='Please check that the sprinkler is broken.'
                 message=MIMEText(errormsg)
                 message['Subject']='Water Please! Sprinkler error'
                 message['from']=me
                 message['to']=you
             elif 'T' in msg:
-                print("12345")
+            	# 설치 환경의 온도가 지정 범위를 벗어났을 경우
                 temp=ser.readline().decode()
                 errormsg=temp
                 message=MIMEText(errormsg)
@@ -75,8 +75,8 @@ def rp_camera():
         elif 'Temp' in msg:
             tempmsg=ser.readline().decode()
             print("Temperature : {}".format(tempmsg))
-        """
         elif 'Motion' in msg:
+        	# 움직임이 감지되었을 경우
             now=datetime.datetime.now()
             filename=now.strftime('%Y-%m-%d-%H:%M:%S')
             dirname='/home/pi/Test/'
@@ -107,7 +107,6 @@ def rp_camera():
             s.quit()
             message['Contents']=None
             subprocess.Popen("rm "+h264name+".h264", shell=True)
-"""
 
 if __name__ == '__main__':
     GPIO.output(17, False)
