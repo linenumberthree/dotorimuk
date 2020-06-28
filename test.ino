@@ -2,7 +2,7 @@
 #include <DHT.h>
 #include <avr/sleep.h>
 
-#define type DHT22
+#define type DHT11
 #define dht 12
 #define pir 2
 #define pi 3
@@ -32,7 +32,7 @@ void setup() {
 
 void loop() {
   delay(500);
-  sleepNow();
+  sleepNow();   /* 절전모드 */
   
   /****온도 측정****/
   temp = dhtSensor.readTemperature();
@@ -42,7 +42,7 @@ void loop() {
       Serial.println("Temp");
       Serial.println("Read Fail");
     } else {
-      if (temp > 36 || temp < 0){
+      if (temp > 36 || temp < 0){       /* 온도 범위 지정 */
         Serial.println("Warning T");
         Serial.println(temp);
       }
@@ -53,8 +53,8 @@ void loop() {
     /****토양 습도 & 물펌프 ****/
     water = analogRead(A3);
 
-    if(water>800) {
-      if(water>=1000){
+    if(water>800) {           /*                */
+      if(water>=1000){        /* 습도 기준치 지정 */
         Serial.println("Warning S");
       }
       Serial.println("Soil");
